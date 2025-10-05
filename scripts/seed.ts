@@ -1,11 +1,28 @@
 import "dotenv/config";
 import { neon } from "@neondatabase/serverless";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { parse as parseEnv } from "dotenv";
 
-const connectionString = process.env.DATABASE_URL?.trim();
+function resolveConnectionString(): string | undefined {
+  const direct = process.env.DATABASE_URL?.trim();
+  if (direct) return direct;
+
+  const examplePath = resolve(process.cwd(), ".env.example");
+  if (!existsSync(examplePath)) {
+    return undefined;
+  }
+
+  const exampleContents = readFileSync(examplePath, "utf8");
+  const parsed = parseEnv(exampleContents);
+  return parsed.DATABASE_URL?.trim();
+}
+
+const connectionString = resolveConnectionString();
 
 if (!connectionString) {
   throw new Error(
-    "DATABASE_URL is required. Copy .env.example to .env (or .env.local) before running npm run seed."
+    "DATABASE_URL is required. Create a .env (or .env.local) file or ensure .env.example includes the Neon connection string."
   );
 }
 
