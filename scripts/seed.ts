@@ -24,7 +24,7 @@ async function main() {
   await sql`
     create table if not exists entrepreneur_profiles (
       id serial primary key,
-      user_id integer references users(id) on delete cascade,
+      user_id integer unique references users(id) on delete cascade,
       full_name text not null,
       headline text,
       sector text,
@@ -44,7 +44,7 @@ async function main() {
   await sql`
     create table if not exists investor_profiles (
       id serial primary key,
-      user_id integer references users(id) on delete cascade,
+      user_id integer unique references users(id) on delete cascade,
       company_name text,
       focus_sectors text[],
       ticket_size_min numeric,
