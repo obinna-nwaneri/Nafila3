@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useFormState, useFormStatus } from "react-dom";
 import { authenticateUser, type LoginFormState } from "@/app/actions";
 import { Logo } from "@/components/logo";
@@ -23,6 +25,7 @@ function SubmitButton() {
 
 export default function LoginPage() {
   const [state, formAction] = useFormState(authenticateUser, initialState);
+  const router = useRouter();
 
   const dashboardRoutes: Record<"entrepreneur" | "investor" | "admin" | "member", string> = {
     entrepreneur: "/entrepreneur",
@@ -39,6 +42,16 @@ export default function LoginPage() {
   };
 
   const dashboardHref = state.ok && state.user ? dashboardRoutes[state.user.role] : null;
+
+  useEffect(() => {
+    if (!state.ok || !state.user) {
+      return;
+    }
+
+    if (state.user.role === "entrepreneur") {
+      router.replace(`${dashboardRoutes.entrepreneur}?welcome=1`);
+    }
+  }, [router, state.ok, state.user]);
 
   return (
     <div className="flex min-h-screen flex-col justify-center bg-gradient-to-br from-brand-50 via-white to-slate-100 px-4 py-16 sm:px-6 lg:px-8">

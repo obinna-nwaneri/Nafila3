@@ -63,6 +63,26 @@ async function main() {
   `;
 
   await sql`
+    create table if not exists entrepreneur_ideas (
+      id serial primary key,
+      user_id integer references users(id) on delete cascade,
+      title text not null,
+      sector text,
+      status text,
+      problem_statement text not null,
+      solution text not null,
+      market_opportunity text not null,
+      revenue_model text not null,
+      financial_projection text not null,
+      traction text not null,
+      media_links jsonb default '[]'::jsonb,
+      created_at timestamptz default now(),
+      updated_at timestamptz default now(),
+      unique (user_id, title)
+    );
+  `;
+
+  await sql`
     create table if not exists investor_profiles (
       id serial primary key,
       user_id integer unique references users(id) on delete cascade,
@@ -155,6 +175,57 @@ async function main() {
         ])}::jsonb
       )
       on conflict (user_id) do nothing;
+    `;
+
+    await sql`
+      insert into entrepreneur_ideas (
+        user_id, title, sector, status, problem_statement, solution, market_opportunity,
+        revenue_model, financial_projection, traction, media_links
+      )
+      values
+        (
+          ${entrepreneurUser[0].id},
+          'Circular Fashion Marketplace',
+          'Sustainable Fashion',
+          'Raising Seed',
+          'African fashion entrepreneurs struggle to access global markets and sustainable fabrics.',
+          'A marketplace that aggregates circular fabrics with financing and distribution support.',
+          'Global sustainable fashion spending will reach $15B by 2027 with 19% CAGR.',
+          'Commission-based marketplace with embedded logistics and financing fees.',
+          'Revenue targets of $500K ARR in 18 months driven by 2k active designers.',
+          '60 designers onboarded, pilot completed in Lagos with 30% repeat orders.',
+          ${JSON.stringify([
+            { label: "Pitch Deck", url: "https://example.com/pitchdeck.pdf" },
+            { label: "Demo Day Video", url: "https://youtube.com/" },
+          ])}::jsonb
+        ),
+        (
+          ${entrepreneurUser[0].id},
+          'Solar Cold Chain Logistics',
+          'Climate & Agriculture',
+          'MVP live',
+          'Agricultural SMEs lose 40% of produce due to unreliable cold storage across African trade routes.',
+          'Deploy solar-powered modular cold rooms with IoT monitoring and pay-as-you-store billing.',
+          'West African horticulture exports to reach $6B by 2028 with increasing demand for cold storage infrastructure.',
+          'Hybrid leasing model with carbon credit monetisation and embedded insurance.',
+          'Projected to hit $1.2M ARR within 24 months at 65% utilisation.',
+          'Pilot network running across 3 cities with 18 agribusinesses under contract.',
+          ${JSON.stringify([
+            { label: "Product Demo", url: "https://example.com/demo" },
+          ])}::jsonb
+        )
+      on conflict (user_id, title) do update
+      set
+        sector = excluded.sector,
+        status = excluded.status,
+        problem_statement = excluded.problem_statement,
+        solution = excluded.solution,
+        market_opportunity = excluded.market_opportunity,
+        revenue_model = excluded.revenue_model,
+        financial_projection = excluded.financial_projection,
+        traction = excluded.traction,
+        media_links = excluded.media_links,
+        updated_at = now();
     `;
   }
 
