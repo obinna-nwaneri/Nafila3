@@ -5,7 +5,9 @@ A Next.js 14 starter template for Nafila Shop – a marketplace that connects en
 ## Getting Started
 
 ```bash
+cp .env.example .env.local  # or `.env`
 npm install
+npm run seed
 npm run dev
 ```
 
