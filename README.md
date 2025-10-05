@@ -15,7 +15,7 @@ The development server will be available at `http://localhost:3000`.
 
 ## Environment Variables
 
-Duplicate `.env.example` into `.env.local` (Next.js default) or `.env` and provide the Neon connection string supplied by the client:
+Duplicate `.env.example` into `.env.local` (Next.js default) or `.env`. The example file already contains the Neon connection string supplied by the client, so copying it is enough to get started:
 
 ```
 DATABASE_URL="postgresql://neondb_owner:npg_ZMgvT4APVa9C@ep-icy-fire-adel044n-pooler.c-2.us-east-1.aws.neon.tech/nafila2?sslmode=require&channel_binding=require"

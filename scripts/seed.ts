@@ -1,11 +1,15 @@
 import "dotenv/config";
 import { neon } from "@neondatabase/serverless";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL is required");
+const connectionString = process.env.DATABASE_URL?.trim();
+
+if (!connectionString) {
+  throw new Error(
+    "DATABASE_URL is required. Copy .env.example to .env (or .env.local) before running npm run seed."
+  );
 }
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(connectionString);
 
 async function main() {
   await sql`create extension if not exists pgcrypto;`;
