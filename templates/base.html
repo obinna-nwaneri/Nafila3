@@ -11,7 +11,7 @@
   <body class="min-h-full text-slate-900">
     <header class="bg-white shadow">
       <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        <a href="{% url 'home' %}" class="text-2xl font-semibold text-indigo-600">Nafila Shop</a>
+        <a href="{% url 'interactions:home' %}" class="text-2xl font-semibold text-indigo-600">Nafila Shop</a>
         <nav class="flex items-center gap-4 text-sm font-medium">
           <a href="{% url 'idea-list' %}" class="text-slate-700 hover:text-indigo-600">Ideas</a>
           {% if user.is_authenticated %}
