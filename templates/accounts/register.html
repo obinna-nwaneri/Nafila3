@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Join Nafila Shop{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-xl rounded-lg bg-white p-8 shadow">
+  <h1 class="mb-6 text-2xl font-semibold text-slate-800">Create your investor or entrepreneur account</h1>
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="grid gap-4 sm:grid-cols-2">
+      {% for field in form %}
+      <div class="sm:col-span-{{ field.name in 'username role'|yesno:'1,2' }}">
+        <label class="mb-1 block text-sm font-medium text-slate-600" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+        <p class="mt-1 text-sm text-red-600">{{ field.errors|striptags }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <button class="w-full rounded bg-indigo-600 py-2 text-white hover:bg-indigo-500">Sign up</button>
+  </form>
+  <p class="mt-4 text-center text-sm text-slate-500">
+    Already on Nafila Shop?
+    <a href="{% url 'login' %}" class="font-medium text-indigo-600 hover:text-indigo-500">Log in</a>
+  </p>
+</div>
+{% endblock %}

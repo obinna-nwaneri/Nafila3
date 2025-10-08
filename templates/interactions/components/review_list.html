@@ -1,0 +1,16 @@
+<div class="space-y-4">
+  {% for review in reviews %}
+  <div class="rounded border border-slate-200 p-3">
+    <div class="flex items-center justify-between text-xs text-slate-500">
+      <span>{{ review.reviewer.display_name|default:review.reviewer.username }}</span>
+      <span>{{ review.created_at|date:"M j, Y" }}</span>
+    </div>
+    <p class="mt-1 text-sm font-medium text-indigo-600">Rating: {{ review.rating }}/5</p>
+    {% if review.feedback %}
+    <p class="mt-1 text-sm text-slate-600">{{ review.feedback }}</p>
+    {% endif %}
+  </div>
+  {% empty %}
+  <p class="text-sm text-slate-500">No reviews yet.</p>
+  {% endfor %}
+</div>

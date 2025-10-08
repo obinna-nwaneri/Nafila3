@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Investor Dashboard · Nafila Shop{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <section class="rounded-lg bg-white p-6 shadow">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+      <div>
+        <h1 class="text-2xl font-semibold text-slate-800">Discover startups that fit your thesis</h1>
+        <p class="text-sm text-slate-600">Use your watchlist to keep track of promising founders.</p>
+      </div>
+      <a href="{% url 'profile' %}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">Update investment profile</a>
+    </div>
+  </section>
+
+  <section class="rounded-lg bg-white p-6 shadow">
+    <h2 class="text-lg font-semibold text-slate-800">Watchlist</h2>
+    <div class="mt-4 space-y-3">
+      {% for entry in watchlist %}
+      <div class="watchlist-card flex flex-col gap-2 rounded border border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm font-medium text-indigo-600"><a href="{{ entry.idea.get_absolute_url }}">{{ entry.idea.title }}</a></p>
+          <p class="text-xs text-slate-500">Saved {{ entry.created_at|date:"M j, Y" }}</p>
+        </div>
+        <form hx-post="{% url 'toggle-watchlist' entry.idea.pk %}" hx-target="closest .watchlist-card" hx-swap="delete">
+          {% csrf_token %}
+          <button class="rounded bg-red-50 px-3 py-1 text-sm text-red-600 hover:bg-red-100">Remove</button>
+        </form>
+      </div>
+      {% empty %}
+      <p class="text-sm text-slate-600">No saved opportunities yet. Explore trending ideas below.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="rounded-lg bg-white p-6 shadow">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-slate-800">Trending ideas</h2>
+      <a href="{% url 'idea-list' %}" class="text-sm text-indigo-600 hover:text-indigo-500">View all</a>
+    </div>
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      {% for idea in ideas %}
+      <article class="rounded border border-slate-200 p-4">
+        <h3 class="text-lg font-semibold text-indigo-600"><a href="{{ idea.get_absolute_url }}">{{ idea.title }}</a></h3>
+        <p class="mt-2 text-sm text-slate-600">{{ idea.summary|truncatechars:160 }}</p>
+      </article>
+      {% empty %}
+      <p class="text-sm text-slate-600">No ideas published yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,144 @@
+[
+  {
+    "model": "accounts.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$nafila2024$aiP+YMqearTRWNtBllGrCOkXgwRaWFPPC+kxoO8Vz1A=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "founder",
+      "first_name": "Fatima",
+      "last_name": "Nafila",
+      "email": "founder@nafila.shop",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-01-01T09:00:00Z",
+      "role": "entrepreneur",
+      "display_name": "Nafila Founder",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "accounts.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$nafila2024$aiP+YMqearTRWNtBllGrCOkXgwRaWFPPC+kxoO8Vz1A=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "investor",
+      "first_name": "Imran",
+      "last_name": "Capital",
+      "email": "investor@nafila.shop",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-01-02T09:00:00Z",
+      "role": "investor",
+      "display_name": "Imran Capital",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "accounts.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$nafila2024$aiP+YMqearTRWNtBllGrCOkXgwRaWFPPC+kxoO8Vz1A=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "community",
+      "first_name": "Chinwe",
+      "last_name": "Supporter",
+      "email": "community@nafila.shop",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-01-03T09:00:00Z",
+      "role": "general",
+      "display_name": "Community Champion",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "accounts.entrepreneurprofile",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "bio": "Climate-focused founder building circular retail experiences for African consumers.",
+      "business_name": "Nafila Shop",
+      "business_idea": "A marketplace that connects sustainable brands with eco-conscious shoppers.",
+      "pitch_video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "documents": "https://example.com/nafila/teaser.pdf",
+      "contact_email": "founder@nafila.shop",
+      "website": "https://nafila.shop",
+      "instagram": "https://instagram.com/nafilashop",
+      "linkedin": "https://linkedin.com/company/nafila-shop",
+      "twitter": "https://x.com/nafilashop",
+      "verified": true
+    }
+  },
+  {
+    "model": "accounts.investorprofile",
+    "pk": 1,
+    "fields": {
+      "user": 2,
+      "sector_preferences": "Climate, Retail, Fintech",
+      "ticket_size": "$25k - $150k",
+      "geography": "Africa, Middle East",
+      "risk_appetite": "Balanced",
+      "contact_email": "investor@nafila.shop",
+      "verified": true
+    }
+  },
+  {
+    "model": "ideas.idea",
+    "pk": 1,
+    "fields": {
+      "owner": 1,
+      "title": "Circular Retail Marketplace",
+      "summary": "Nafila Shop digitizes community markets, enabling entrepreneurs to showcase eco-friendly products with transparent impact metrics.",
+      "problem_statement": "African shoppers lack access to verified sustainable products and funding for circular businesses is limited.",
+      "solution": "A trust-first platform combining digital storefronts, logistics partners, and investor deal rooms.",
+      "market_opportunity": "A $12B sustainable commerce market growing 18% YoY across Africa and the Middle East.",
+      "business_model": "Commission on sales, SaaS dashboards for vendors, and premium investor data rooms.",
+      "financial_projections": "Projected $1.5M GMV in year 1 with 40% YoY growth.",
+      "traction": "2,500 waitlist signups, 40 pilot vendors, and 3 logistics partners.",
+      "pitch_video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "instagram_handle": "https://instagram.com/nafilashop",
+      "other_social_links": "https://x.com/nafilashop\nhttps://linkedin.com/company/nafila-shop",
+      "created_at": "2024-01-10T10:00:00Z",
+      "updated_at": "2024-01-10T10:00:00Z",
+      "status": "published"
+    }
+  },
+  {
+    "model": "interactions.watchlist",
+    "pk": 1,
+    "fields": {
+      "investor": 2,
+      "idea": 1,
+      "created_at": "2024-01-12T10:00:00Z"
+    }
+  },
+  {
+    "model": "interactions.ideacomment",
+    "pk": 1,
+    "fields": {
+      "user": 3,
+      "idea": 1,
+      "content": "Exciting proposition! How do you plan to scale vendor onboarding?",
+      "created_at": "2024-01-13T09:00:00Z"
+    }
+  },
+  {
+    "model": "interactions.profile_review",
+    "pk": 1,
+    "fields": {
+      "reviewer": 2,
+      "reviewee": 1,
+      "rating": 5,
+      "feedback": "Founder is transparent with numbers and has impressive traction milestones.",
+      "created_at": "2024-01-14T12:00:00Z"
+    }
+  }
+]

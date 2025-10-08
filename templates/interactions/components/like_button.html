@@ -1,0 +1,9 @@
+{% load static %}
+<button class="flex items-center gap-2 rounded border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:border-indigo-200 hover:text-indigo-600">
+  {% if liked %}
+  <span aria-hidden="true">❤️</span>
+  {% else %}
+  <span aria-hidden="true">🤍</span>
+  {% endif %}
+  <span>{{ like_count|default:idea.likes.count }} likes</span>
+</button>
