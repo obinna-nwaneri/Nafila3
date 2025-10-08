@@ -8,7 +8,11 @@
     {{ form.non_field_errors }}
     <div class="grid gap-4 sm:grid-cols-2">
       {% for field in form %}
-      <div class="sm:col-span-{{ field.name in 'username role'|yesno:'1,2' }}">
+      {% if field.name == "username" or field.name == "role" %}
+      <div class="sm:col-span-2">
+      {% else %}
+      <div class="sm:col-span-1">
+      {% endif %}
         <label class="mb-1 block text-sm font-medium text-slate-600" for="{{ field.id_for_label }}">{{ field.label }}</label>
         {{ field }}
         {% if field.errors %}
