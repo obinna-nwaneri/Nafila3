@@ -13,7 +13,11 @@
       <form hx-post="{% url 'toggle-like' idea.pk %}" hx-target="#idea-like-{{ idea.pk }}" hx-swap="outerHTML">
         {% csrf_token %}
         <div id="idea-like-{{ idea.pk }}">
-          {% include "interactions/components/like_button.html" with idea=idea liked=request.user.is_authenticated and idea.likes.filter(user=request.user).exists %}
+          {% if request.user.is_authenticated %}
+            {% include "interactions/components/like_button.html" with idea=idea liked=idea.likes.filter(user=request.user).exists %}
+          {% else %}
+            {% include "interactions/components/like_button.html" with idea=idea liked=False %}
+          {% endif %}
         </div>
       </form>
       {% if user.is_authenticated and user.is_investor %}
