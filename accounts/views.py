@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 
 from ideas.models import Idea
 from interactions.models import Watchlist
@@ -23,6 +24,7 @@ from .models import EntrepreneurProfile, InvestorProfile, User
 class HtmxLoginView(LoginView):
     authentication_form = HtmxAuthenticationForm
     template_name = "accounts/login.html"
+    success_url = reverse_lazy("accounts:dashboard")
 
     def form_invalid(self, form: HtmxAuthenticationForm) -> HttpResponse:
         response = super().form_invalid(form)
