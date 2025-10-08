@@ -24,7 +24,7 @@
         <div class="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
           <span>Market: {{ idea.market_opportunity|default:"Not specified"|truncatechars:60 }}</span>
           <span>Risk: {{ idea.owner.investor_profile.risk_appetite|default:"Medium" }}</span>
-          <form hx-post="{% url 'toggle-like' idea.pk %}" hx-target="#feed-like-{{ idea.pk }}" hx-swap="outerHTML">
+          <form hx-post="{% url 'interactions:toggle-like' idea.pk %}" hx-target="#feed-like-{{ idea.pk }}" hx-swap="outerHTML">
             {% csrf_token %}
             <div id="feed-like-{{ idea.pk }}">
               {% include "interactions/components/like_button.html" with idea=idea liked=idea.liked_by_user %}

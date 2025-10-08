@@ -10,14 +10,14 @@
     <h1 class="mt-3 text-3xl font-semibold text-slate-900">{{ idea.title }}</h1>
     <p class="mt-4 text-slate-600">{{ idea.summary }}</p>
     <div class="mt-6 flex flex-wrap items-center gap-3 text-sm">
-      <form hx-post="{% url 'toggle-like' idea.pk %}" hx-target="#idea-like-{{ idea.pk }}" hx-swap="outerHTML">
+      <form hx-post="{% url 'interactions:toggle-like' idea.pk %}" hx-target="#idea-like-{{ idea.pk }}" hx-swap="outerHTML">
         {% csrf_token %}
         <div id="idea-like-{{ idea.pk }}">
           {% include "interactions/components/like_button.html" with idea=idea liked=liked_by_user %}
         </div>
       </form>
       {% if user.is_authenticated and user.is_investor %}
-      <form hx-post="{% url 'toggle-watchlist' idea.pk %}" hx-target="#watchlist-button" hx-swap="outerHTML">
+      <form hx-post="{% url 'interactions:toggle-watchlist' idea.pk %}" hx-target="#watchlist-button" hx-swap="outerHTML">
         {% csrf_token %}
         <div id="watchlist-button">
           {% include "interactions/components/watchlist_button.html" with idea=idea in_watchlist=in_watchlist %}
@@ -93,11 +93,11 @@
       </div>
       <div class="rounded-lg bg-white p-6 shadow">
         <h2 class="text-lg font-semibold text-slate-800">Community feedback</h2>
-        <div id="comment-thread" hx-get="{% url 'add-comment' idea.pk %}" hx-trigger="load">
+        <div id="comment-thread" hx-get="{% url 'interactions:add-comment' idea.pk %}" hx-trigger="load">
           {% include "interactions/components/comment_list.html" with idea=idea comments=idea.comments.select_related('user') %}
         </div>
         {% if user.is_authenticated %}
-        <form hx-post="{% url 'add-comment' idea.pk %}" hx-target="#comment-thread" hx-swap="innerHTML" class="mt-4 space-y-2">
+        <form hx-post="{% url 'interactions:add-comment' idea.pk %}" hx-target="#comment-thread" hx-swap="innerHTML" class="mt-4 space-y-2">
           {% csrf_token %}
           {{ comment_form.as_p }}
           <button class="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-500">Comment</button>
@@ -108,11 +108,11 @@
       </div>
       <div class="rounded-lg bg-white p-6 shadow">
         <h2 class="text-lg font-semibold text-slate-800">Ratings & Reviews</h2>
-        <div id="reviews" hx-get="{% url 'submit-review' idea.owner.username %}" hx-trigger="load">
+        <div id="reviews" hx-get="{% url 'interactions:submit-review' idea.owner.username %}" hx-trigger="load">
           {% include "interactions/components/review_list.html" with target=idea.owner reviews=idea.owner.received_reviews.select_related('reviewer') %}
         </div>
         {% if user.is_authenticated %}
-        <form hx-post="{% url 'submit-review' idea.owner.username %}" hx-target="#reviews" hx-swap="innerHTML" class="mt-4 space-y-2">
+        <form hx-post="{% url 'interactions:submit-review' idea.owner.username %}" hx-target="#reviews" hx-swap="innerHTML" class="mt-4 space-y-2">
           {% csrf_token %}
           <label class="block text-sm font-medium text-slate-600">Rating</label>
           <input type="number" name="rating" min="1" max="5" value="5" class="w-full rounded border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500" />

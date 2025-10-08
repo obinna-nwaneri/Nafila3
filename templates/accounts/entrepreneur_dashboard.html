@@ -7,7 +7,7 @@
       <h1 class="text-2xl font-semibold text-slate-800">Hello, {{ user.display_name|default:user.username }}</h1>
       <p class="text-sm text-slate-600">Track your startup submissions and engage with investors.</p>
     </div>
-    <a href="{% url 'idea-create' %}" class="inline-flex items-center rounded bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-500">Submit new idea</a>
+    <a href="{% url 'ideas:idea-create' %}" class="inline-flex items-center rounded bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-500">Submit new idea</a>
   </div>
 
   <section class="rounded-lg bg-white p-6 shadow">
@@ -22,7 +22,7 @@
         <p class="mt-2 text-sm text-slate-600">{{ idea.summary|truncatechars:160 }}</p>
         <div class="mt-3 flex items-center justify-between text-xs text-slate-500">
           <span>Status: <span class="font-medium">{{ idea.get_status_display }}</span></span>
-          <a href="{% url 'idea-update' idea.pk %}" class="text-indigo-600 hover:text-indigo-500">Edit</a>
+          <a href="{% url 'ideas:idea-update' idea.pk %}" class="text-indigo-600 hover:text-indigo-500">Edit</a>
         </div>
       </article>
       {% empty %}

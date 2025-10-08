@@ -42,7 +42,7 @@ def toggle_follow(request: HttpRequest, username: str) -> HttpResponse:
     target = get_object_or_404(User, username=username)
     if target == request.user:
         messages.warning(request, "You cannot follow yourself.")
-        return redirect("home")
+        return redirect("interactions:home")
     follow, created = Follow.objects.get_or_create(follower=request.user, following=target)
     if not created:
         follow.delete()
@@ -50,7 +50,7 @@ def toggle_follow(request: HttpRequest, username: str) -> HttpResponse:
     else:
         following = True
     if not request.htmx:
-        return redirect("home")
+        return redirect("interactions:home")
     template = "interactions/components/follow_button.html"
     return render(request, template, {"target": target, "following": following})
 
@@ -90,7 +90,7 @@ def add_comment(request: HttpRequest, pk: int) -> HttpResponse:
                 )
                 response.status_code = 401
                 return response
-            return redirect("login")
+            return redirect("accounts:login")
         if form.is_valid():
             comment: IdeaComment = form.save(commit=False)
             comment.user = request.user
@@ -145,7 +145,7 @@ def submit_review(request: HttpRequest, username: str) -> HttpResponse:
                 )
                 response.status_code = 401
                 return response
-            return redirect("login")
+            return redirect("accounts:login")
         rating = int(request.POST.get("rating", 5))
         feedback = request.POST.get("feedback", "")
         ProfileReview.objects.update_or_create(
@@ -155,7 +155,7 @@ def submit_review(request: HttpRequest, username: str) -> HttpResponse:
         )
         messages.success(request, "Review submitted.")
         if not request.htmx:
-            return redirect("home")
+            return redirect("interactions:home")
     return render(
         request,
         "interactions/components/review_list.html",

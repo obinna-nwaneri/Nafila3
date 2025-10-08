@@ -21,7 +21,7 @@
           <p class="text-sm font-medium text-indigo-600"><a href="{{ entry.idea.get_absolute_url }}">{{ entry.idea.title }}</a></p>
           <p class="text-xs text-slate-500">Saved {{ entry.created_at|date:"M j, Y" }}</p>
         </div>
-        <form hx-post="{% url 'toggle-watchlist' entry.idea.pk %}" hx-target="closest .watchlist-card" hx-swap="delete">
+        <form hx-post="{% url 'interactions:toggle-watchlist' entry.idea.pk %}" hx-target="closest .watchlist-card" hx-swap="delete">
           {% csrf_token %}
           <button class="rounded bg-red-50 px-3 py-1 text-sm text-red-600 hover:bg-red-100">Remove</button>
         </form>

@@ -42,7 +42,7 @@ def register(request: HttpRequest) -> HttpResponse:
                 InvestorProfile.objects.get_or_create(user=user)
             login(request, user)
             messages.success(request, "Welcome to Nafila Shop! Complete your profile to get started.")
-            return redirect("dashboard")
+            return redirect("accounts:dashboard")
     else:
         form = RegistrationForm()
     return render(request, "accounts/register.html", {"form": form})
@@ -116,7 +116,7 @@ def profile(request: HttpRequest) -> HttpResponse:
                     obj.user = user
                     obj.save()
             messages.success(request, "Profile updated successfully.")
-            return redirect("profile")
+            return redirect("accounts:profile")
         else:
             messages.error(request, "Please correct the errors below.")
 

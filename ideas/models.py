@@ -38,7 +38,7 @@ class Idea(models.Model):
         return self.title
 
     def get_absolute_url(self) -> str:
-        return reverse("idea-detail", args=[self.pk])
+        return reverse("ideas:idea-detail", args=[self.pk])
 
 
 class IdeaDocument(models.Model):
