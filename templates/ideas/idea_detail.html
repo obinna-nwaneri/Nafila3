@@ -13,18 +13,14 @@
       <form hx-post="{% url 'toggle-like' idea.pk %}" hx-target="#idea-like-{{ idea.pk }}" hx-swap="outerHTML">
         {% csrf_token %}
         <div id="idea-like-{{ idea.pk }}">
-          {% if request.user.is_authenticated %}
-            {% include "interactions/components/like_button.html" with idea=idea liked=idea.likes.filter(user=request.user).exists %}
-          {% else %}
-            {% include "interactions/components/like_button.html" with idea=idea liked=False %}
-          {% endif %}
+          {% include "interactions/components/like_button.html" with idea=idea liked=liked_by_user %}
         </div>
       </form>
       {% if user.is_authenticated and user.is_investor %}
       <form hx-post="{% url 'toggle-watchlist' idea.pk %}" hx-target="#watchlist-button" hx-swap="outerHTML">
         {% csrf_token %}
         <div id="watchlist-button">
-          {% include "interactions/components/watchlist_button.html" with idea=idea in_watchlist=idea.watchlisted_by.filter(investor=user).exists %}
+          {% include "interactions/components/watchlist_button.html" with idea=idea in_watchlist=in_watchlist %}
         </div>
       </form>
       {% endif %}

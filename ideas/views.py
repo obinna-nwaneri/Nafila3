@@ -33,6 +33,12 @@ def idea_detail(request: HttpRequest, pk: int) -> HttpResponse:
         entrepreneur_profile = idea.owner.entrepreneur_profile
     except EntrepreneurProfile.DoesNotExist:
         entrepreneur_profile = None
+    liked_by_user = False
+    in_watchlist = False
+    if request.user.is_authenticated:
+        liked_by_user = idea.likes.filter(user=request.user).exists()
+        if request.user.is_investor:
+            in_watchlist = idea.watchlisted_by.filter(investor=request.user).exists()
     return render(
         request,
         "ideas/idea_detail.html",
@@ -40,6 +46,8 @@ def idea_detail(request: HttpRequest, pk: int) -> HttpResponse:
             "idea": idea,
             "comment_form": comment_form,
             "entrepreneur_profile": entrepreneur_profile,
+            "liked_by_user": liked_by_user,
+            "in_watchlist": in_watchlist,
         },
     )
 

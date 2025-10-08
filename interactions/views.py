@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import BooleanField, Exists, OuterRef, Value
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -13,7 +14,18 @@ from .models import Follow, IdeaComment, IdeaLike, ProfileReview, Watchlist
 
 
 def home(request: HttpRequest) -> HttpResponse:
-    ideas = Idea.objects.filter(status=Idea.Status.PUBLISHED)[:12]
+    ideas_qs = (
+        Idea.objects.filter(status=Idea.Status.PUBLISHED)
+        .select_related("owner", "owner__investor_profile")
+    )
+    if request.user.is_authenticated:
+        liked_subquery = IdeaLike.objects.filter(user=request.user, idea=OuterRef("pk"))
+        ideas_qs = ideas_qs.annotate(liked_by_user=Exists(liked_subquery))
+    else:
+        ideas_qs = ideas_qs.annotate(
+            liked_by_user=Value(False, output_field=BooleanField())
+        )
+    ideas = ideas_qs[:12]
     comment_form = CommentForm()
     return render(
         request,
