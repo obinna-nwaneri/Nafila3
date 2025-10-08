@@ -94,7 +94,7 @@
       <div class="rounded-lg bg-white p-6 shadow">
         <h2 class="text-lg font-semibold text-slate-800">Community feedback</h2>
         <div id="comment-thread" hx-get="{% url 'interactions:add-comment' idea.pk %}" hx-trigger="load">
-          {% include "interactions/components/comment_list.html" with idea=idea comments=idea.comments.select_related('user') %}
+          {% include "interactions/components/comment_list.html" with idea=idea comments=comments %}
         </div>
         {% if user.is_authenticated %}
         <form hx-post="{% url 'interactions:add-comment' idea.pk %}" hx-target="#comment-thread" hx-swap="innerHTML" class="mt-4 space-y-2">
@@ -109,7 +109,7 @@
       <div class="rounded-lg bg-white p-6 shadow">
         <h2 class="text-lg font-semibold text-slate-800">Ratings & Reviews</h2>
         <div id="reviews" hx-get="{% url 'interactions:submit-review' idea.owner.username %}" hx-trigger="load">
-          {% include "interactions/components/review_list.html" with target=idea.owner reviews=idea.owner.received_reviews.select_related('reviewer') %}
+          {% include "interactions/components/review_list.html" with target=idea.owner reviews=reviews %}
         </div>
         {% if user.is_authenticated %}
         <form hx-post="{% url 'interactions:submit-review' idea.owner.username %}" hx-target="#reviews" hx-swap="innerHTML" class="mt-4 space-y-2">
