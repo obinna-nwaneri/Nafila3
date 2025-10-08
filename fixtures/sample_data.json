@@ -131,7 +131,7 @@
     }
   },
   {
-    "model": "interactions.profile_review",
+    "model": "interactions.profilereview",
     "pk": 1,
     "fields": {
       "reviewer": 2,
