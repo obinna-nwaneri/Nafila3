@@ -13,17 +13,17 @@
       <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <a href="{% url 'interactions:home' %}" class="text-2xl font-semibold text-indigo-600">Nafila Shop</a>
         <nav class="flex items-center gap-4 text-sm font-medium">
-          <a href="{% url 'idea-list' %}" class="text-slate-700 hover:text-indigo-600">Ideas</a>
+          <a href="{% url 'ideas:idea-list' %}" class="text-slate-700 hover:text-indigo-600">Ideas</a>
           {% if user.is_authenticated %}
-          <a href="{% url 'dashboard' %}" class="text-slate-700 hover:text-indigo-600">Dashboard</a>
-          <a href="{% url 'profile' %}" class="text-slate-700 hover:text-indigo-600">Profile</a>
-          <form action="{% url 'logout' %}" method="post" class="inline">
+          <a href="{% url 'accounts:dashboard' %}" class="text-slate-700 hover:text-indigo-600">Dashboard</a>
+          <a href="{% url 'accounts:profile' %}" class="text-slate-700 hover:text-indigo-600">Profile</a>
+          <form action="{% url 'accounts:logout' %}" method="post" class="inline">
             {% csrf_token %}
             <button class="rounded bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-500">Logout</button>
           </form>
           {% else %}
-          <a href="{% url 'login' %}" class="text-slate-700 hover:text-indigo-600">Login</a>
-          <a href="{% url 'register' %}" class="rounded bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-500">Sign Up</a>
+          <a href="{% url 'accounts:login' %}" class="text-slate-700 hover:text-indigo-600">Login</a>
+          <a href="{% url 'accounts:register' %}" class="rounded bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-500">Sign Up</a>
           {% endif %}
         </nav>
       </div>

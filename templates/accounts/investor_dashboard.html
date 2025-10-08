@@ -8,7 +8,7 @@
         <h1 class="text-2xl font-semibold text-slate-800">Discover startups that fit your thesis</h1>
         <p class="text-sm text-slate-600">Use your watchlist to keep track of promising founders.</p>
       </div>
-      <a href="{% url 'profile' %}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">Update investment profile</a>
+      <a href="{% url 'accounts:profile' %}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">Update investment profile</a>
     </div>
   </section>
 
@@ -35,7 +35,7 @@
   <section class="rounded-lg bg-white p-6 shadow">
     <div class="flex items-center justify-between">
       <h2 class="text-lg font-semibold text-slate-800">Trending ideas</h2>
-      <a href="{% url 'idea-list' %}" class="text-sm text-indigo-600 hover:text-indigo-500">View all</a>
+      <a href="{% url 'ideas:idea-list' %}" class="text-sm text-indigo-600 hover:text-indigo-500">View all</a>
     </div>
     <div class="mt-4 grid gap-4 md:grid-cols-2">
       {% for idea in ideas %}
