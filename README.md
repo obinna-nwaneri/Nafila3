@@ -148,6 +148,7 @@ WorkingDirectory=/var/www/nafila-shop
 Environment="DJANGO_SETTINGS_MODULE=nafila_shop.settings"
 EnvironmentFile=/var/www/nafila-shop/.env
 RuntimeDirectory=nafila-shop
+RuntimeDirectoryMode=0755
 ExecStart=/var/www/nafila-shop/.venv/bin/gunicorn \
     --access-logfile - \
     --workers 3 \
@@ -166,6 +167,16 @@ sudo systemctl enable --now nafila-shop
 
 If you immediately see `Job for nafila-shop.service failed because of unavailable resources or another system error`, the
 [troubleshooting section](#11a-troubleshoot-a-failed-systemd-start) below walks through the most common causes.
+
+After any edit to `/etc/systemd/system/nafila-shop.service`, repeat the reload/start sequence and inspect the live status output:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart nafila-shop
+sudo systemctl status nafila-shop
+```
+
+`status` will usually spell out whether Gunicorn, Python, or the socket directory is preventing a successful start.
 
 ### 9. Configure Nginx as a reverse proxy
 
@@ -213,9 +224,9 @@ sudo ufw enable
 
 If `sudo systemctl enable --now nafila-shop` reports a failure:
 
-- Inspect the service status for immediate errors (this often reproduces the
+- Inspect the service status for immediate errors (this often reproduces the exact
   `Job for nafila-shop.service failed because of unavailable resources or another system error`
-  message with additional context):
+  message with additional context about missing files, permissions, or Python exceptions):
 
   ```bash
   sudo systemctl status nafila-shop
@@ -228,8 +239,8 @@ If `sudo systemctl enable --now nafila-shop` reports a failure:
   ```
 
 - Common fixes:
-  - Ensure `/var/www/nafila-shop/.env` exists and contains the required environment variables (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, etc.).
-  - Confirm the virtual environment is populated and includes Gunicorn: `source /var/www/nafila-shop/.venv/bin/activate && pip show gunicorn`.
+  - Ensure `/var/www/nafila-shop/.env` exists and contains the required environment variables (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, etc.). If you prefer not to keep secrets in a file, remove the `EnvironmentFile` line and supply the values directly in the unit definition with `Environment=` entries.
+  - Confirm the virtual environment is populated and includes Gunicorn: `source /var/www/nafila-shop/.venv/bin/activate && pip show gunicorn`. The most common trigger for the systemd failure message is a missing Gunicorn binary or a typo in the `ExecStart` path.
   - Verify database migrations have been applied: `python manage.py migrate`.
   - Check file permissions so the service user can read the project files and the `.env` file.
   - If you changed the socket path, mirror the update in both the systemd unit and Nginx configuration.
