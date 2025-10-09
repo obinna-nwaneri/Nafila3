@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Ideas Marketplace · Nafila Shop{% endblock %}
+{% block content %}
+<section class="space-y-6">
+  <div class="flex flex-col gap-4 rounded-lg bg-white p-6 shadow sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-slate-800">Discover ventures</h1>
+      <p class="text-sm text-slate-600">Filter by sectors, traction, or opportunity keywords.</p>
+    </div>
+    {% if user.is_authenticated and user.is_entrepreneur %}
+    <a href="{% url 'ideas:idea-create' %}" class="inline-flex items-center rounded bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-500">Post idea</a>
+    {% endif %}
+  </div>
+
+  <form method="get" class="flex flex-col gap-2 rounded-lg bg-white p-4 shadow sm:flex-row sm:items-center">
+    <label class="text-sm font-medium text-slate-600" for="search">Search</label>
+    <input id="search" name="q" value="{{ query }}" class="w-full flex-1 rounded border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Market size, fintech, CAC, ..." />
+    <button class="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-500">Search</button>
+  </form>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    {% for idea in ideas %}
+    <article class="rounded-lg bg-white p-6 shadow">
+      <div class="flex items-center justify-between text-xs text-slate-500">
+        <span>{{ idea.owner.display_name|default:idea.owner.username }}</span>
+        <span>{{ idea.created_at|date:"M j, Y" }}</span>
+      </div>
+      <h2 class="mt-2 text-xl font-semibold text-indigo-600"><a href="{{ idea.get_absolute_url }}">{{ idea.title }}</a></h2>
+      <p class="mt-3 text-sm text-slate-600">{{ idea.summary|truncatechars:180 }}</p>
+      <div class="mt-4 flex items-center gap-4 text-xs text-slate-500">
+        <span>Market: {{ idea.market_opportunity|default:"Not specified"|truncatechars:60 }}</span>
+        <span>Traction: {{ idea.traction|default:"Early"|truncatechars:40 }}</span>
+      </div>
+    </article>
+    {% empty %}
+    <p class="text-sm text-slate-600">No ideas found. Try adjusting your filters.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

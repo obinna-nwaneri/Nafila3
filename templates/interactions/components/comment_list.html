@@ -1,0 +1,13 @@
+<div class="space-y-4">
+  {% for comment in comments %}
+  <div class="rounded border border-slate-200 p-3">
+    <div class="flex items-center justify-between text-xs text-slate-500">
+      <span>{{ comment.user.display_name|default:comment.user.username }}</span>
+      <span>{{ comment.created_at|date:"M j, Y" }}</span>
+    </div>
+    <p class="mt-2 text-sm text-slate-700">{{ comment.content }}</p>
+  </div>
+  {% empty %}
+  <p class="text-sm text-slate-500">No comments yet. Start the conversation!</p>
+  {% endfor %}
+</div>

@@ -1,2 +1,300 @@
-# Nafila3
-Nafila3
+# Nafila Shop Platform
+
+A full-stack Django + HTMX + Tailwind CSS starter template for the Nafila Shop marketplace. The project is built to connect entrepreneurs and investors with role-based dashboards, structured idea submissions, trust signals, and social engagement primitives.
+
+## Features
+
+- **Authentication & Roles** – Custom user model with Entrepreneur, Investor, and General roles, registration & HTMX-enhanced login flows.
+- **Profile Management** – Dedicated profile forms for entrepreneurs and investors including bios, documents, verification flags, and investment preferences.
+- **Idea Showcase** – Structured idea CRUD with sections for problem, solution, market opportunity, financials, traction, and media links.
+- **Investor Workflows** – Searchable idea marketplace, investor watchlists, and dashboards with trending opportunities.
+- **Engagement Layer** – Likes, comments, follows, and community reviews rendered via HTMX partials for responsive interactivity.
+- **Trust & Verification** – Profile verification badges, document links, and ratings to boost credibility.
+- **Admin Dashboards** – Django admin already wired to monitor users, ideas, and social activity.
+- **Sample Content** – Fixtures with ready-to-use entrepreneur, investor, and community accounts plus demo ideas and interactions.
+
+## Getting Started
+
+1. **Install dependencies**
+
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+2. **Apply migrations & load sample data**
+
+   ```bash
+   python manage.py migrate
+   python manage.py loaddata fixtures/sample_data.json
+   ```
+
+3. **Run the development server**
+
+   ```bash
+   python manage.py runserver
+   ```
+
+4. **Visit the app**
+
+   Open [http://localhost:8000](http://localhost:8000) to explore the landing page, dashboards, and idea marketplace.
+
+## Sample Accounts
+
+All sample users share the password `Password123!` and can be used to explore role-based flows:
+
+| Role | Username | Email |
+| --- | --- | --- |
+| Entrepreneur | `founder` | `founder@nafila.shop` |
+| Investor | `investor` | `investor@nafila.shop` |
+| Community | `community` | `community@nafila.shop` |
+
+## Environment Variables
+
+The template uses SQLite by default and does not require custom environment variables. Update `nafila_shop/settings.py` for production-ready configurations (secret key, allowed hosts, email backend, etc.).
+
+## Tailwind & HTMX
+
+- Tailwind CSS is included via CDN for zero-config styling.
+- HTMX powers partial updates for likes, comments, follows, reviews, and watchlist interactions.
+
+## Next Steps
+
+- Plug in OAuth (e.g., Google) using `django-allauth` for social login.
+- Connect to a production database and storage for media uploads.
+- Extend messaging, analytics dashboards, and verification workflows.
+
+## Deploying to an Ubuntu Production VPS (74.50.81.201)
+
+The steps below assume you have SSH access to an Ubuntu VPS at `74.50.81.201` and want to run Nafila Shop in production. Adapt usernames, domains, and paths to match your environment.
+
+### 1. Prepare your local project for upload
+
+- Commit or stash local changes so the codebase is in a clean state.
+- Ensure `requirements.txt` and any `.env.example` files are up to date.
+
+### 2. Transfer the source code to the server
+
+From your local machine (outside the VPS):
+
+```bash
+scp -r . root@74.50.81.201:/var/www/nafila-shop
+```
+
+> Replace `root` only if you use a non-root deploy user. Ensure `/var/www/nafila-shop` exists and is writable (see step 4) before running the copy. Alternatively, push to a Git host and clone from the server.
+
+### 3. SSH into the VPS and install system dependencies
+
+```bash
+ssh root@74.50.81.201
+sudo apt update
+sudo apt install -y python3-venv python3-pip python3-dev build-essential nginx git
+```
+
+### 4. Create the project directory structure
+
+```bash
+sudo mkdir -p /var/www/nafila-shop
+cd /var/www/nafila-shop
+```
+
+> Adjust ownership if you deploy with a non-root user (for example, `sudo chown -R deploy:www-data /var/www/nafila-shop`). Root deployments can skip changing file ownership.
+
+If you transferred an archive instead of a directory, extract it now (for example, `tar -xzf nafila-shop.tar.gz`).
+
+### 5. Set up a Python virtual environment
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip wheel
+pip install -r requirements.txt
+pip install gunicorn
+```
+
+### 6. Configure environment variables
+
+- Copy `.env.example` to `.env` if available, or create one manually alongside `manage.py`.
+- Set core Django settings such as:
+  - `SECRET_KEY` – generate a long random string (e.g., via `python -c "import secrets; print(secrets.token_urlsafe(64))"`).
+  - `DEBUG=False` to disable debug mode in production.
+  - `ALLOWED_HOSTS=74.50.81.201,<your-domain>` so Django serves responses for your VPS IP and any custom domain.
+  - `CSRF_TRUSTED_ORIGINS=https://74.50.81.201,https://<your-domain>` to avoid CSRF verification errors behind HTTPS.
+- Configure database credentials if you are using PostgreSQL/MySQL instead of SQLite (e.g., `DATABASE_URL` or individual engine settings).
+- Provide email, storage, and third-party API credentials (`EMAIL_HOST`, `DEFAULT_FROM_EMAIL`, `AWS_ACCESS_KEY_ID`, etc.) required for production features.
+
+### 7. Apply migrations, load optional data, and collect static files
+
+```bash
+python manage.py migrate
+python manage.py loaddata fixtures/sample_data.json  # optional demo data
+python manage.py collectstatic --noinput
+```
+
+### 8. Create a systemd service for Gunicorn
+
+Create `/etc/systemd/system/nafila-shop.service` with the following contents (update paths and usernames if you use a non-root service account):
+
+```ini
+[Unit]
+Description=Gunicorn daemon for Nafila Shop
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/var/www/nafila-shop
+Environment="DJANGO_SETTINGS_MODULE=nafila_shop.settings"
+EnvironmentFile=/var/www/nafila-shop/.env
+RuntimeDirectory=nafila-shop
+RuntimeDirectoryMode=0755
+ExecStart=/var/www/nafila-shop/.venv/bin/gunicorn \
+    --access-logfile - \
+    --workers 3 \
+    --bind unix:/run/nafila-shop/nafila-shop.sock nafila_shop.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then reload systemd and enable the service:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now nafila-shop
+```
+
+If you immediately see `Job for nafila-shop.service failed because of unavailable resources or another system error`, the
+[troubleshooting section](#11a-troubleshoot-a-failed-systemd-start) below walks through the most common causes.
+
+After any edit to `/etc/systemd/system/nafila-shop.service`, repeat the reload/start sequence and inspect the live status output:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart nafila-shop
+sudo systemctl status nafila-shop
+```
+
+`status` will usually spell out whether Gunicorn, Python, or the socket directory is preventing a successful start.
+
+### 9. Configure Nginx as a reverse proxy
+
+Create `/etc/nginx/sites-available/nafila-shop` with:
+
+```nginx
+server {
+    listen 80;
+    server_name 74.50.81.201 your-domain.com;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        alias /var/www/nafila-shop/static/;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/nafila-shop/nafila-shop.sock;
+    }
+}
+```
+
+Activate the site and restart Nginx:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/nafila-shop /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+### 10. Configure the firewall (optional but recommended)
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow 'Nginx Full'
+sudo ufw enable
+```
+
+### 11. Verify the deployment
+
+- Check Gunicorn logs: `journalctl -u nafila-shop -f`.
+- Visit `http://74.50.81.201/` (or your domain) to confirm the site is live.
+
+### 11a. Troubleshoot a failed systemd start
+
+If `sudo systemctl enable --now nafila-shop` reports a failure:
+
+- Inspect the service status for immediate errors (this often reproduces the exact
+  `Job for nafila-shop.service failed because of unavailable resources or another system error`
+  message with additional context about missing files, permissions, or Python exceptions):
+
+  ```bash
+  sudo systemctl status nafila-shop
+  ```
+
+- Tail the detailed logs to see Gunicorn and Django output:
+
+  ```bash
+  sudo journalctl -xeu nafila-shop
+  ```
+
+- Common fixes:
+  - Ensure `/var/www/nafila-shop/.env` exists and contains the required environment variables (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, etc.). If you prefer not to keep secrets in a file, remove the `EnvironmentFile` line and supply the values directly in the unit definition with `Environment=` entries.
+  - Confirm the virtual environment is populated and includes Gunicorn: `source /var/www/nafila-shop/.venv/bin/activate && pip show gunicorn`. The most common trigger for the systemd failure message is a missing Gunicorn binary or a typo in the `ExecStart` path.
+  - Verify database migrations have been applied: `python manage.py migrate`.
+  - Check file permissions so the service user can read the project files and the `.env` file.
+  - If you changed the socket path, mirror the update in both the systemd unit and Nginx configuration.
+  - Remove any stale socket left from a previous run and re-test:
+
+    ```bash
+    sudo rm -f /run/nafila-shop/nafila-shop.sock
+    ```
+
+    Systemd will recreate the socket on the next start as long as `RuntimeDirectory=nafila-shop` is present in the unit file.
+  - Manually create and own the runtime socket directory if systemd cannot provision it (rare on hardened systems):
+
+    ```bash
+    sudo mkdir -p /run/nafila-shop
+    sudo chown root:www-data /run/nafila-shop
+    ```
+
+  - Run Gunicorn directly to surface Python/Django errors before systemd retries:
+
+    ```bash
+    source /var/www/nafila-shop/.venv/bin/activate
+    cd /var/www/nafila-shop
+    gunicorn --bind 0.0.0.0:8001 nafila_shop.wsgi:application
+    ```
+
+- If the logs mention `No such file or directory` for the Gunicorn binary or project path, double-check the `WorkingDirectory` and
+  `ExecStart` values in `/etc/systemd/system/nafila-shop.service` and that the virtualenv exists at `/var/www/nafila-shop/.venv`.
+- For `permission denied` errors when binding the socket, ensure the service user has write access to `/run/nafila-shop` and consider adding
+  `RuntimeDirectoryMode=0755` under the `[Service]` section if your distribution defaults to a restrictive umask.
+
+    Stop the manual process with `Ctrl+C` once you have captured the traceback, then resolve the underlying issue and restart the service.
+
+### 12. Set up HTTPS (optional but recommended)
+
+Use Let’s Encrypt with Certbot for TLS certificates:
+
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d your-domain.com
+```
+
+Renewals run automatically via systemd timers. Confirm with `sudo certbot renew --dry-run`.
+
+### 13. Configure continuous delivery (optional)
+
+- Pull updates from Git: `git pull origin main && sudo systemctl restart nafila-shop`.
+- Or automate deployments with GitHub Actions, Rsync, or other tooling.
+
+These steps cover the end-to-end process of uploading the project to the Ubuntu VPS and running it behind Gunicorn and Nginx for production traffic.
+
+## Production Hardening
+
+For production, configure a process manager such as `gunicorn` with `systemd` and proxy it through Nginx or Caddy.
+
+## License
+
+This template is provided for rapid prototyping and internal evaluation.

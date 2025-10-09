@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Nafila Shop{% endblock %}
+{% block content %}
+<div class="rounded-lg bg-white p-6 shadow">
+  <h1 class="text-2xl font-semibold text-slate-800">Explore the community</h1>
+  <p class="mt-2 text-sm text-slate-600">Follow founders, join discussions, and cheer on the next breakout idea.</p>
+  <div class="mt-6 grid gap-4 md:grid-cols-2">
+    {% for idea in ideas %}
+    <article class="rounded border border-slate-200 p-4">
+      <h3 class="text-lg font-semibold text-indigo-600"><a href="{{ idea.get_absolute_url }}">{{ idea.title }}</a></h3>
+      <p class="mt-2 text-sm text-slate-600">{{ idea.summary|truncatechars:160 }}</p>
+      <div class="mt-3 flex items-center justify-between text-xs text-slate-500">
+        <span>{{ idea.likes.count }} likes • {{ idea.comments.count }} comments</span>
+        <a href="{{ idea.get_absolute_url }}" class="text-indigo-600 hover:text-indigo-500">View idea</a>
+      </div>
+    </article>
+    {% empty %}
+    <p class="text-sm text-slate-600">No community updates yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
