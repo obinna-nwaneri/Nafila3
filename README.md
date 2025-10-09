@@ -79,10 +79,10 @@ The steps below assume you have SSH access to an Ubuntu VPS at `74.50.81.201` an
 From your local machine (outside the VPS):
 
 ```bash
-scp -r . obinnanwaneri@74.50.81.201:~/nafila-shop
+scp -r . obinnanwaneri@74.50.81.201:/var/www/nafila-shop
 ```
 
-> Swap `obinnanwaneri` for the SSH user that owns your deployment directory. Alternatively, push to a Git host and clone from the server.
+> Swap `obinnanwaneri` for the SSH user that owns your deployment directory. Ensure `/var/www/nafila-shop` exists and is writable (see step 4) before running the copy. Alternatively, push to a Git host and clone from the server.
 
 ### 3. SSH into the VPS and install system dependencies
 
@@ -95,9 +95,12 @@ sudo apt install -y python3-venv python3-pip python3-dev build-essential nginx g
 ### 4. Create the project directory structure
 
 ```bash
-mkdir -p ~/nafila-shop
-cd ~/nafila-shop
+sudo mkdir -p /var/www/nafila-shop
+sudo chown -R obinnanwaneri:www-data /var/www/nafila-shop
+cd /var/www/nafila-shop
 ```
+
+> Adjust the ownership command to match your deploy user and group. For root-owned deployments, you may skip the `chown` step.
 
 If you transferred an archive instead of a directory, extract it now (for example, `tar -xzf nafila-shop.tar.gz`).
 
@@ -142,10 +145,10 @@ After=network.target
 [Service]
 User=obinnanwaneri
 Group=www-data
-WorkingDirectory=/home/obinnanwaneri/nafila-shop
+WorkingDirectory=/var/www/nafila-shop
 Environment="DJANGO_SETTINGS_MODULE=nafila_shop.settings"
-EnvironmentFile=/home/obinnanwaneri/nafila-shop/.env
-ExecStart=/home/obinnanwaneri/nafila-shop/.venv/bin/gunicorn \
+EnvironmentFile=/var/www/nafila-shop/.env
+ExecStart=/var/www/nafila-shop/.venv/bin/gunicorn \
     --access-logfile - \
     --workers 3 \
     --bind unix:/run/nafila-shop.sock nafila_shop.wsgi:application
@@ -172,7 +175,7 @@ server {
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
-        alias /home/obinnanwaneri/nafila-shop/static/;
+        alias /var/www/nafila-shop/static/;
     }
 
     location / {
