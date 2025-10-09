@@ -65,6 +65,54 @@ The template uses SQLite by default and does not require custom environment vari
 - Connect to a production database and storage for media uploads.
 - Extend messaging, analytics dashboards, and verification workflows.
 
+## Deploying to the VPS (74.50.81.201)
+
+Follow these steps to push the project to your VPS and run it in a production-ready virtual environment:
+
+1. **Copy the source to the server**
+
+   From your local machine run:
+
+   ```bash
+   scp -r . obinnanwaneri@74.50.81.201:~/nafila-shop
+   ```
+
+   > Replace the username with the SSH user configured on the VPS if it differs.
+
+2. **SSH into the VPS and install dependencies**
+
+   ```bash
+   ssh obinnanwaneri@74.50.81.201
+   sudo apt update && sudo apt install -y python3-venv python3-pip
+   cd ~/nafila-shop
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. **Configure Django for production**
+
+   - Set `DEBUG = False` and update `ALLOWED_HOSTS` in `nafila_shop/settings.py` to include `74.50.81.201` (and any domain).
+   - Create an `.env` or export environment variables for secret keys, email, and database credentials if required.
+
+4. **Migrate, load data, and collect static files**
+
+   ```bash
+   python manage.py migrate
+   python manage.py loaddata fixtures/sample_data.json  # optional demo data
+   python manage.py collectstatic --noinput
+   ```
+
+5. **Run the application**
+
+   For quick verification you can use Django’s dev server (behind a firewall):
+
+   ```bash
+   python manage.py runserver 0.0.0.0:8000
+   ```
+
+   For production, configure a process manager such as `gunicorn` with `systemd` and proxy it through Nginx or Caddy.
+
 ## License
 
 This template is provided for rapid prototyping and internal evaluation.
