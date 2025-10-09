@@ -111,7 +111,9 @@ Follow these steps to push the project to your VPS and run it in a production-re
    python manage.py runserver 0.0.0.0:8000
    ```
 
-   For production, configure a process manager such as `gunicorn` with `systemd` and proxy it through Nginx or Caddy.
+## Production Hardening
+
+For production, configure a process manager such as `gunicorn` with `systemd` and proxy it through Nginx or Caddy.
 
 ## License
 
