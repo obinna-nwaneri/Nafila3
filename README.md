@@ -79,15 +79,15 @@ The steps below assume you have SSH access to an Ubuntu VPS at `74.50.81.201` an
 From your local machine (outside the VPS):
 
 ```bash
-scp -r . obinnanwaneri@74.50.81.201:/var/www/nafila-shop
+scp -r . root@74.50.81.201:/var/www/nafila-shop
 ```
 
-> Swap `obinnanwaneri` for the SSH user that owns your deployment directory. Ensure `/var/www/nafila-shop` exists and is writable (see step 4) before running the copy. Alternatively, push to a Git host and clone from the server.
+> Replace `root` only if you use a non-root deploy user. Ensure `/var/www/nafila-shop` exists and is writable (see step 4) before running the copy. Alternatively, push to a Git host and clone from the server.
 
 ### 3. SSH into the VPS and install system dependencies
 
 ```bash
-ssh obinnanwaneri@74.50.81.201
+ssh root@74.50.81.201
 sudo apt update
 sudo apt install -y python3-venv python3-pip python3-dev build-essential nginx git
 ```
@@ -96,11 +96,10 @@ sudo apt install -y python3-venv python3-pip python3-dev build-essential nginx g
 
 ```bash
 sudo mkdir -p /var/www/nafila-shop
-sudo chown -R obinnanwaneri:www-data /var/www/nafila-shop
 cd /var/www/nafila-shop
 ```
 
-> Adjust the ownership command to match your deploy user and group. For root-owned deployments, you may skip the `chown` step.
+> Adjust ownership if you deploy with a non-root user (for example, `sudo chown -R deploy:www-data /var/www/nafila-shop`). Root deployments can skip changing file ownership.
 
 If you transferred an archive instead of a directory, extract it now (for example, `tar -xzf nafila-shop.tar.gz`).
 
@@ -135,7 +134,7 @@ python manage.py collectstatic --noinput
 
 ### 8. Create a systemd service for Gunicorn
 
-Create `/etc/systemd/system/nafila-shop.service` with the following contents (update paths and usernames):
+Create `/etc/systemd/system/nafila-shop.service` with the following contents (update paths and usernames if you use a non-root service account):
 
 ```ini
 [Unit]
@@ -143,7 +142,7 @@ Description=Gunicorn daemon for Nafila Shop
 After=network.target
 
 [Service]
-User=obinnanwaneri
+User=root
 Group=www-data
 WorkingDirectory=/var/www/nafila-shop
 Environment="DJANGO_SETTINGS_MODULE=nafila_shop.settings"
@@ -245,7 +244,7 @@ If `sudo systemctl enable --now nafila-shop` reports a failure:
 
     ```bash
     sudo mkdir -p /run/nafila-shop
-    sudo chown obinnanwaneri:www-data /run/nafila-shop
+    sudo chown root:www-data /run/nafila-shop
     ```
 
   - Run Gunicorn directly to surface Python/Django errors before systemd retries:
