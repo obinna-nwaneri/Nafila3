@@ -148,10 +148,11 @@ Group=www-data
 WorkingDirectory=/var/www/nafila-shop
 Environment="DJANGO_SETTINGS_MODULE=nafila_shop.settings"
 EnvironmentFile=/var/www/nafila-shop/.env
+RuntimeDirectory=nafila-shop
 ExecStart=/var/www/nafila-shop/.venv/bin/gunicorn \
     --access-logfile - \
     --workers 3 \
-    --bind unix:/run/nafila-shop.sock nafila_shop.wsgi:application
+    --bind unix:/run/nafila-shop/nafila-shop.sock nafila_shop.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
@@ -180,7 +181,7 @@ server {
 
     location / {
         include proxy_params;
-        proxy_pass http://unix:/run/nafila-shop.sock;
+        proxy_pass http://unix:/run/nafila-shop/nafila-shop.sock;
     }
 }
 ```
@@ -205,6 +206,29 @@ sudo ufw enable
 
 - Check Gunicorn logs: `journalctl -u nafila-shop -f`.
 - Visit `http://74.50.81.201/` (or your domain) to confirm the site is live.
+
+### 11a. Troubleshoot a failed systemd start
+
+If `sudo systemctl enable --now nafila-shop` reports a failure:
+
+- Inspect the service status for immediate errors:
+
+  ```bash
+  sudo systemctl status nafila-shop
+  ```
+
+- Tail the detailed logs to see Gunicorn and Django output:
+
+  ```bash
+  sudo journalctl -xeu nafila-shop
+  ```
+
+- Common fixes:
+  - Ensure `/var/www/nafila-shop/.env` exists and contains the required environment variables (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, etc.).
+  - Confirm the virtual environment is populated and includes Gunicorn: `source /var/www/nafila-shop/.venv/bin/activate && pip show gunicorn`.
+  - Verify database migrations have been applied: `python manage.py migrate`.
+  - Check file permissions so the service user can read the project files and the `.env` file.
+  - If you changed the socket path, mirror the update in both the systemd unit and Nginx configuration.
 
 ### 12. Set up HTTPS (optional but recommended)
 
