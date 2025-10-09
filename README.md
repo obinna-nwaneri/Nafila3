@@ -211,7 +211,9 @@ sudo ufw enable
 
 If `sudo systemctl enable --now nafila-shop` reports a failure:
 
-- Inspect the service status for immediate errors:
+- Inspect the service status for immediate errors (this often reproduces the
+  `Job for nafila-shop.service failed because of unavailable resources or another system error`
+  message with additional context):
 
   ```bash
   sudo systemctl status nafila-shop
@@ -229,6 +231,22 @@ If `sudo systemctl enable --now nafila-shop` reports a failure:
   - Verify database migrations have been applied: `python manage.py migrate`.
   - Check file permissions so the service user can read the project files and the `.env` file.
   - If you changed the socket path, mirror the update in both the systemd unit and Nginx configuration.
+  - Manually create and own the runtime socket directory if systemd cannot provision it (rare on hardened systems):
+
+    ```bash
+    sudo mkdir -p /run/nafila-shop
+    sudo chown obinnanwaneri:www-data /run/nafila-shop
+    ```
+
+  - Run Gunicorn directly to surface Python/Django errors before systemd retries:
+
+    ```bash
+    source /var/www/nafila-shop/.venv/bin/activate
+    cd /var/www/nafila-shop
+    gunicorn --bind 0.0.0.0:8001 nafila_shop.wsgi:application
+    ```
+
+    Stop the manual process with `Ctrl+C` once you have captured the traceback, then resolve the underlying issue and restart the service.
 
 ### 12. Set up HTTPS (optional but recommended)
 
