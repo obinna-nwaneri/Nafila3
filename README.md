@@ -165,6 +165,9 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now nafila-shop
 ```
 
+If you immediately see `Job for nafila-shop.service failed because of unavailable resources or another system error`, the
+[troubleshooting section](#11a-troubleshoot-a-failed-systemd-start) below walks through the most common causes.
+
 ### 9. Configure Nginx as a reverse proxy
 
 Create `/etc/nginx/sites-available/nafila-shop` with:
@@ -231,6 +234,13 @@ If `sudo systemctl enable --now nafila-shop` reports a failure:
   - Verify database migrations have been applied: `python manage.py migrate`.
   - Check file permissions so the service user can read the project files and the `.env` file.
   - If you changed the socket path, mirror the update in both the systemd unit and Nginx configuration.
+  - Remove any stale socket left from a previous run and re-test:
+
+    ```bash
+    sudo rm -f /run/nafila-shop/nafila-shop.sock
+    ```
+
+    Systemd will recreate the socket on the next start as long as `RuntimeDirectory=nafila-shop` is present in the unit file.
   - Manually create and own the runtime socket directory if systemd cannot provision it (rare on hardened systems):
 
     ```bash
@@ -245,6 +255,11 @@ If `sudo systemctl enable --now nafila-shop` reports a failure:
     cd /var/www/nafila-shop
     gunicorn --bind 0.0.0.0:8001 nafila_shop.wsgi:application
     ```
+
+- If the logs mention `No such file or directory` for the Gunicorn binary or project path, double-check the `WorkingDirectory` and
+  `ExecStart` values in `/etc/systemd/system/nafila-shop.service` and that the virtualenv exists at `/var/www/nafila-shop/.venv`.
+- For `permission denied` errors when binding the socket, ensure the service user has write access to `/run/nafila-shop` and consider adding
+  `RuntimeDirectoryMode=0755` under the `[Service]` section if your distribution defaults to a restrictive umask.
 
     Stop the manual process with `Ctrl+C` once you have captured the traceback, then resolve the underlying issue and restart the service.
 
