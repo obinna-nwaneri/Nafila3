@@ -113,9 +113,14 @@ pip install gunicorn
 
 ### 6. Configure environment variables
 
-- Copy `.env.example` to `.env` if available or create one manually.
-- Set `SECRET_KEY`, `DEBUG=False`, `ALLOWED_HOSTS=74.50.81.201,<your-domain>`.
-- Configure any email, storage, or third-party credentials required for production.
+- Copy `.env.example` to `.env` if available, or create one manually alongside `manage.py`.
+- Set core Django settings such as:
+  - `SECRET_KEY` – generate a long random string (e.g., via `python -c "import secrets; print(secrets.token_urlsafe(64))"`).
+  - `DEBUG=False` to disable debug mode in production.
+  - `ALLOWED_HOSTS=74.50.81.201,<your-domain>` so Django serves responses for your VPS IP and any custom domain.
+  - `CSRF_TRUSTED_ORIGINS=https://74.50.81.201,https://<your-domain>` to avoid CSRF verification errors behind HTTPS.
+- Configure database credentials if you are using PostgreSQL/MySQL instead of SQLite (e.g., `DATABASE_URL` or individual engine settings).
+- Provide email, storage, and third-party API credentials (`EMAIL_HOST`, `DEFAULT_FROM_EMAIL`, `AWS_ACCESS_KEY_ID`, etc.) required for production features.
 
 ### 7. Apply migrations, load optional data, and collect static files
 
