@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile · Nafila Shop{% endblock %}
+{% block content %}
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="lg:col-span-1">
+    <div class="rounded-lg bg-white p-6 shadow">
+      <h2 class="text-xl font-semibold text-slate-800">Profile Overview</h2>
+      <p class="mt-2 text-sm text-slate-600">Update your details so investors and founders can learn about you.</p>
+    </div>
+  </div>
+  <div class="space-y-6 lg:col-span-2">
+    <form method="post" class="space-y-6 rounded-lg bg-white p-6 shadow">
+      {% csrf_token %}
+      <div>
+        <h3 class="text-lg font-semibold text-slate-800">Account</h3>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          {% for field in profile_form %}
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-600" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ field.errors|striptags }}</p>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if entrepreneur_form %}
+      <div>
+        <h3 class="text-lg font-semibold text-slate-800">Entrepreneur Profile</h3>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          {% for field in entrepreneur_form %}
+          <div class="sm:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-slate-600" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="mt-1 text-xs text-slate-500">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ field.errors|striptags }}</p>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if investor_form %}
+      <div>
+        <h3 class="text-lg font-semibold text-slate-800">Investor Profile</h3>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          {% for field in investor_form %}
+          <div class="sm:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-slate-600" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ field.errors|striptags }}</p>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="flex justify-end gap-3">
+        <a href="{% url 'accounts:dashboard' %}" class="rounded border border-slate-300 px-4 py-2 text-slate-600 hover:bg-slate-100">Cancel</a>
+        <button class="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-500">Save changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
